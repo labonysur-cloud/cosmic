@@ -107,6 +107,7 @@ export function getRealInfo({ dateStr, timeStr, lat, lon, locationName }) {
     location: locationName || null,
     moonPhase: phaseDetails.name,
     moonPhaseFraction: phaseDetails.fraction,
+    moonPhaseAngle: phaseDetails.angle,
     visiblePlanets,
     story: generatePoeticStory(phaseDetails.name, visiblePlanets, timeStr, locationName)
   };

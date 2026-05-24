@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import CosmicScene from "@/components/CosmicScene";
 import CosmicNewspaper from "@/components/CosmicNewspaper";
+import PremiumMoon from "@/components/PremiumMoon";
 import { getRealInfo } from "@/lib/astronomy";
 import { getNASAImageForDate, getNASAImagesForDate, getHubbleImageForDate } from "@/lib/nasa";
 import { getHistoricalEvents, getWaybackMachineSnapshots } from "@/lib/history";
@@ -317,21 +318,28 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Real Constellations & Astronomy */}
-                <div className="glass-panel" style={{ textAlign: "left" }}>
-                  <h3 style={{ color: "var(--color-accent)", marginBottom: "1.5rem", fontSize: "1.2rem" }}>Real-World Constellations</h3>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-                    <div style={{ padding: "10px", backgroundColor: "rgba(0,0,0,0.2)", borderRadius: "8px" }}>
-                       <div style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", textTransform: "uppercase" }}>The Sun resided in</div>
-                       <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{cosmicData.astrology?.realSunConstellation}</div>
-                    </div>
-                    <div style={{ padding: "10px", backgroundColor: "rgba(0,0,0,0.2)", borderRadius: "8px" }}>
-                       <div style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", textTransform: "uppercase" }}>The Moon resided in</div>
-                       <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{cosmicData.astrology?.realMoonConstellation}</div>
-                    </div>
-                  </div>
-                  <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", marginTop: "1rem" }}>Calculated exactly using their true Right Ascension and Declination.</p>
+                {/* Real Constellations */}
+            <div className="glass-panel" style={{ display: "flex", gap: "20px", width: "100%", maxWidth: "800px" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <h3 style={{ margin: "0 0 10px 0", color: "var(--color-accent)", fontSize: "1.2rem", textTransform: "uppercase", letterSpacing: "1px" }}>Real-World Constellations</h3>
+                <div style={{ marginBottom: "1rem" }}>
+                  <strong style={{ display: "block", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "2px", opacity: 0.7 }}>The Sun resided in</strong>
+                  <span style={{ fontSize: "1.8rem", fontWeight: "bold" }}>{cosmicData.sunConstellation}</span>
                 </div>
+                <div>
+                  <strong style={{ display: "block", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "2px", opacity: 0.7 }}>The Moon glowed in</strong>
+                  <span style={{ fontSize: "1.8rem", fontWeight: "bold" }}>{cosmicData.moonConstellation}</span>
+                </div>
+                <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", marginTop: "1rem" }}>Calculated exactly using their true Right Ascension and Declination.</p>
+              </div>
+              <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", borderLeft: "1px solid rgba(255,255,255,0.1)", paddingLeft: "20px" }}>
+                <PremiumMoon 
+                  phaseAngle={cosmicData.moonPhaseDetails.phaseAngle} 
+                  phaseName={cosmicData.moonPhaseDetails.phaseName}
+                  dateStr={cosmicData.birthDate} 
+                />
+              </div>
+            </div>
 
                 {/* What Did Hubble See on Your Birthday? */}
                 {cosmicData.hubble && (

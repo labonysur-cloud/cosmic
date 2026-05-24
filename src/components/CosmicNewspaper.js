@@ -1,4 +1,5 @@
 import React from "react";
+import PremiumMoon from "./PremiumMoon";
 
 const MoonPhaseVisual = ({ fraction }) => {
   const isWaxing = fraction <= 0.5;
@@ -127,6 +128,19 @@ const CosmicNewspaper = React.forwardRef(({ cosmicData, nasaData }, ref) => {
                   <p style={{ textAlign: "center", marginBottom: "10px", fontWeight: "bold" }}>
                     Sun in {cosmicData.astrology.realSunConstellation} &nbsp;&bull;&nbsp; Moon in {cosmicData.astrology.realMoonConstellation}
                   </p>
+                  
+                  {cosmicData.moonPhaseDetails && (
+                    <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+                      <div style={{ transform: 'scale(0.8)', transformOrigin: 'center' }}>
+                        <PremiumMoon 
+                          phaseAngle={cosmicData.moonPhaseDetails.phaseAngle} 
+                          phaseName={cosmicData.moonPhaseDetails.phaseName}
+                          dateStr={cosmicData.birthDate} 
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   <p style={{ margin: 0 }}>{cosmicData.astrology.reading}</p>
                 </div>
               ) : (

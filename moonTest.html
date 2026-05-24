@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="root"></div>
+  <script>
+    function getMoonPhasePath(phaseAngle) {
+      // phaseAngle: 0 = New, 90 = First Quarter, 180 = Full, 270 = Last Quarter
+      const rad = (phaseAngle / 180) * Math.PI;
+      const r = 100;
+      
+      let path = "";
+      if (phaseAngle <= 180) {
+        // Waxing: Lit on the right. 
+        // Right hemisphere is always fully lit, terminator is on the left or right depending on phase.
+        // Actually:
+        // New to First Quarter (0-90): Only a sliver on the right is lit. 
+        // We draw the right semicircle, then subtract the dark ellipse on the right.
+        // First Quarter to Full (90-180): Right semicircle is lit, PLUS an ellipse on the left.
+        
+        let cos = Math.cos(rad); // 1 at 0, 0 at 90, -1 at 180
+        // sweep flag: 1 means draw arc in positive angle direction
+        
+        if (phaseAngle <= 90) {
+          // Crescent. Draw right arc, then draw ellipse arc back to top
+          path = `M 100,0 A 100,100 0 0,1 100,200 A ${r * cos},100 0 0,0 100,0`;
+        } else {
+          // Gibbous. Draw right arc, then draw ellipse arc on left to top
+          path = `M 100,0 A 100,100 0 0,1 100,200 A ${r * Math.abs(cos)},100 0 0,1 100,0`;
+        }
+      } else {
+        // Waning: Lit on the left.
+        let cos = Math.cos(rad); // -1 at 180, 0 at 270, 1 at 360
+        if (phaseAngle <= 270) {
+          // Gibbous: Draw left arc, then draw ellipse arc on right
+          path = `M 100,0 A 100,100 0 0,0 100,200 A ${r * Math.abs(cos)},100 0 0,0 100,0`;
+        } else {
+          // Crescent: Draw left arc, then draw ellipse arc on left
+          path = `M 100,0 A 100,100 0 0,0 100,200 A ${r * cos},100 0 0,1 100,0`;
+        }
+      }
+      return path;
+    }
+
+    const phases = [45, 90, 135, 180, 225, 270, 315];
+    document.getElementById('root').innerHTML = phases.map(p => `
+      <svg width="100" height="100" viewBox="0 0 200 200" style="background: black; margin: 10px; border-radius: 50%;">
+        <path d="${getMoonPhasePath(p)}" fill="white" />
+      </svg>
+    `).join('');
+  </script>
+</body>
+</html>
