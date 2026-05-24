@@ -23,9 +23,16 @@ export async function getNASAImageForDate(dateStr) {
     }
 
     const data = await response.json();
+    let url = data.hdurl || data.url;
+    
+    // Proxy images to fix CORS issues (which block rendering and html2canvas)
+    if (data.media_type === "image" && url) {
+      url = `/api/proxy-image?url=${encodeURIComponent(url)}`;
+    }
+
     return {
       title: data.title,
-      url: data.hdurl || data.url,
+      url: url,
       explanation: data.explanation,
       copyright: data.copyright || "Public Domain",
       mediaType: data.media_type
