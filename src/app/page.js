@@ -6,6 +6,9 @@ import CosmicNewspaper from "@/components/CosmicNewspaper";
 import CosmicIdentityCard from "@/components/CosmicIdentityCard";
 import { getRealInfo } from "@/lib/astronomy";
 import { getNASAImageForDate } from "@/lib/nasa";
+import { getHistoricalEvents } from "@/lib/history";
+import { getAstrologicalData } from "@/lib/astrology";
+import { getEarthStats } from "@/lib/earth";
 import { motion, AnimatePresence } from "framer-motion";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -55,9 +58,21 @@ export default function Home() {
       lon,
       locationName: finalLocationName
     });
+    
+    const historyData = await getHistoricalEvents(birthDate);
+    const astrologyData = getAstrologicalData(birthDate, birthTime);
+    const earthData = getEarthStats(birthDate, lat);
+
+    const fullCosmicData = {
+      ...astData,
+      history: historyData,
+      astrology: astrologyData,
+      earth: earthData
+    };
+
     const nData = await getNASAImageForDate(birthDate);
     
-    setCosmicData(astData);
+    setCosmicData(fullCosmicData);
     setNasaData(nData);
     
     setIsLoading(false);

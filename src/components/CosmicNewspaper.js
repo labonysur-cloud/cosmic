@@ -1,5 +1,37 @@
 import React from "react";
 
+const MoonPhaseVisual = ({ fraction }) => {
+  const isWaxing = fraction <= 0.5;
+  const ill = fraction <= 0.5 ? fraction * 2 : 2 - fraction * 2;
+  
+  const sweepBase = isWaxing ? 1 : 0; 
+  
+  let rx = 50 - (ill * 100);
+  let sweepTerm = 0;
+  if (rx < 0) {
+     rx = -rx;
+     sweepTerm = 1;
+  }
+  
+  const darkColor = "#2b2b2b";
+  const lightColor = "#e6e6e6";
+
+  return (
+    <svg width="80" height="80" viewBox="0 0 100 100" style={{ filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.3))" }}>
+      <circle cx="50" cy="50" r="49" fill={darkColor} />
+      <path 
+        d={`M 50,1 A 49,49 0 0,${sweepBase} 50,99 A ${rx},49 0 0,${sweepTerm} 50,1`} 
+        fill={lightColor} 
+      />
+      {/* Craters */}
+      <circle cx="30" cy="40" r="5" fill="rgba(0,0,0,0.15)" />
+      <circle cx="70" cy="60" r="8" fill="rgba(0,0,0,0.15)" />
+      <circle cx="45" cy="75" r="4" fill="rgba(0,0,0,0.15)" />
+      <circle cx="50" cy="50" r="49" fill="none" stroke="#2b2b2b" strokeWidth="2" />
+    </svg>
+  );
+};
+
 const CosmicNewspaper = React.forwardRef(({ cosmicData, nasaData }, ref) => {
   if (!cosmicData) return null;
 
@@ -7,10 +39,10 @@ const CosmicNewspaper = React.forwardRef(({ cosmicData, nasaData }, ref) => {
     <div
       ref={ref}
       style={{
-        width: "800px",
-        minHeight: "1100px",
+        width: "900px",
+        minHeight: "1200px",
         padding: "50px",
-        backgroundColor: "#f4eedd", // faded parchment tone
+        backgroundColor: "#f0ebd8", // vintage paper
         color: "#2b2b2b",
         fontFamily: "'Playfair Display', serif",
         position: "absolute",
@@ -18,101 +50,148 @@ const CosmicNewspaper = React.forwardRef(({ cosmicData, nasaData }, ref) => {
         top: 0,
         boxSizing: "border-box",
         border: "1px solid #dcd3b6",
-        boxShadow: "inset 0 0 100px rgba(139, 115, 85, 0.1)",
-        // Adding a subtle noise/grain effect via CSS background gradient
+        boxShadow: "inset 0 0 150px rgba(139, 115, 85, 0.15)",
         backgroundImage: "radial-gradient(rgba(0,0,0,0.03) 1px, transparent 0)",
         backgroundSize: "4px 4px",
       }}
     >
-      <div style={{ border: "2px solid #2b2b2b", padding: "40px", height: "100%", boxSizing: "border-box", position: "relative" }}>
+      <div style={{ border: "4px double #2b2b2b", padding: "40px", height: "100%", boxSizing: "border-box", display: "flex", flexDirection: "column" }}>
         
-        {/* Header */}
-        <div style={{ textAlign: "center", borderBottom: "2px solid #2b2b2b", paddingBottom: "20px", marginBottom: "30px" }}>
-          <h4 style={{ textTransform: "uppercase", letterSpacing: "3px", fontSize: "12px", marginBottom: "15px" }}>
-            Authentic Historical Record
-          </h4>
-          <h1 style={{ fontSize: "42px", margin: "0 0 10px 0", textTransform: "uppercase", lineHeight: "1.1" }}>
+        {/* Masthead */}
+        <div style={{ textAlign: "center", borderBottom: "3px solid #2b2b2b", paddingBottom: "20px", marginBottom: "30px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", textTransform: "uppercase", borderBottom: "1px solid #2b2b2b", paddingBottom: "10px", marginBottom: "15px", fontWeight: "bold" }}>
+            <span>No. 1 &mdash; Verified Historical Record</span>
+            <span>{cosmicData.date}</span>
+            <span>Price: One Cosmos</span>
+          </div>
+          <h1 style={{ fontSize: "56px", margin: "0 0 10px 0", textTransform: "uppercase", lineHeight: "1", letterSpacing: "2px" }}>
             The Cosmic Archive
           </h1>
-          <h2 style={{ fontSize: "24px", fontStyle: "italic", fontWeight: "normal", margin: 0 }}>
-            A Chronicle of the Night You Arrived
+          <h2 style={{ fontSize: "20px", fontStyle: "italic", fontWeight: "normal", margin: 0, color: "#4a4a4a" }}>
+            A Chronicle of the Heavens & Earth on the Night You Arrived
           </h2>
         </div>
 
-        {/* Content Columns */}
-        <div style={{ display: "flex", gap: "40px" }}>
+        {/* CSS Grid Layout for Articles */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", flex: 1 }}>
           
-          {/* Left Column (Sky Data & Story) */}
-          <div style={{ flex: "1" }}>
-            <h3 style={{ borderBottom: "1px solid #2b2b2b", paddingBottom: "5px", textTransform: "uppercase", letterSpacing: "1px" }}>
-              Astronomical Conditions
-            </h3>
-            <p style={{ fontWeight: "bold", marginTop: "15px", fontSize: "18px" }}>Date: {cosmicData.date}</p>
-            {cosmicData.time && <p style={{ margin: "5px 0", fontSize: "16px" }}><strong>Time:</strong> {cosmicData.time}</p>}
-            {cosmicData.location && <p style={{ margin: "5px 0", fontSize: "16px" }}><strong>Location:</strong> {cosmicData.location}</p>}
-            <p style={{ margin: "5px 0" }}><strong>Moon Phase:</strong> {cosmicData.moonPhase}</p>
-            <p style={{ margin: "5px 0" }}><strong>Visible Planetary Bodies:</strong> {cosmicData.visiblePlanets && cosmicData.visiblePlanets.length > 0 ? cosmicData.visiblePlanets.join(", ") : "None visible at zenith"}</p>
-
-            <div style={{ marginTop: "40px", fontStyle: "italic", fontSize: "16px", lineHeight: "1.8", textAlign: "justify" }}>
-              <span style={{ fontSize: "40px", float: "left", lineHeight: "0.8", marginRight: "8px", marginTop: "8px" }}>O</span>
-              {cosmicData.story.substring(1)}
-            </div>
+          {/* Left Column */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
             
-            <div style={{ marginTop: "40px", borderTop: "1px dashed #2b2b2b", paddingTop: "20px" }}>
-              <p style={{ fontSize: "12px", textAlign: "justify", color: "#4a4a4a" }}>
-                This record was synthesized from exact planetary positions calculated for the ecliptic and authentic astronomical algorithms. 
-                The universe is not static; it is a living memory of light and gravity.
-              </p>
-            </div>
-          </div>
-
-          {/* Right Column (NASA Imagery) */}
-          <div style={{ flex: "1", borderLeft: "1px solid #2b2b2b", paddingLeft: "40px" }}>
-            <h3 style={{ borderBottom: "1px solid #2b2b2b", paddingBottom: "5px", textTransform: "uppercase", letterSpacing: "1px" }}>
-              NASA Archive Discovery
-            </h3>
-            
-            {nasaData ? (
-              <div style={{ marginTop: "15px" }}>
-                {nasaData.mediaType === "video" ? (
-                  <iframe
-                    src={nasaData.url}
-                    title={nasaData.title}
-                    frameBorder="0"
-                    allow="encrypted-media"
-                    allowFullScreen
-                    style={{ width: "100%", aspectRatio: "16/9", border: "4px solid #2b2b2b", padding: "2px", backgroundColor: "#fff" }}
-                  />
-                ) : (
-                  <img 
-                    src={nasaData.url} 
-                    alt={nasaData.title} 
-                    crossOrigin="anonymous"
-                    style={{ width: "100%", filter: "sepia(0.6) contrast(1.1) brightness(0.9)", border: "4px solid #2b2b2b", padding: "2px", backgroundColor: "#fff" }} 
-                  />
-                )}
-                <h4 style={{ margin: "15px 0 5px 0", fontSize: "16px" }}>{nasaData.title}</h4>
-                <p style={{ fontSize: "12px", textAlign: "justify", lineHeight: "1.6" }}>
-                  {nasaData.explanation.substring(0, 500)}...
-                </p>
-                <p style={{ fontSize: "10px", marginTop: "10px", fontStyle: "italic" }}>
-                  Source: NASA Astronomy Picture of the Day API
-                  <br />
-                  Copyright: {nasaData.copyright || "Public Domain"}
-                </p>
+            {/* Top Left: Astronomy & Poetic Story */}
+            <article>
+              <h3 style={{ fontSize: "26px", borderBottom: "2px solid #2b2b2b", paddingBottom: "5px", marginBottom: "15px", textTransform: "uppercase", lineHeight: "1.1" }}>
+                Astronomical Conditions
+              </h3>
+              
+              <div style={{ display: "flex", gap: "20px", alignItems: "center", marginBottom: "20px", padding: "15px", backgroundColor: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.1)" }}>
+                <MoonPhaseVisual fraction={cosmicData.moonPhaseFraction} />
+                <div style={{ fontSize: "13px", lineHeight: "1.6" }}>
+                  <p style={{ margin: "0 0 3px 0" }}><strong>Moon Phase:</strong> {cosmicData.moonPhase}</p>
+                  <p style={{ margin: "0 0 3px 0" }}><strong>Location:</strong> {cosmicData.location || "Unknown"}</p>
+                  <p style={{ margin: "0 0 3px 0" }}><strong>Time:</strong> {cosmicData.time || "Unknown"}</p>
+                  <p style={{ margin: 0 }}><strong>Planets:</strong> {cosmicData.visiblePlanets && cosmicData.visiblePlanets.length > 0 ? cosmicData.visiblePlanets.join(", ") : "None visible"}</p>
+                </div>
               </div>
-            ) : (
-              <p style={{ marginTop: "15px", fontStyle: "italic" }}>Archive records for this date are currently obscured by cosmic dust.</p>
-            )}
+
+              <div style={{ fontStyle: "italic", fontSize: "15px", lineHeight: "1.8", textAlign: "justify" }}>
+                <span style={{ fontSize: "48px", float: "left", lineHeight: "0.8", marginRight: "8px", marginTop: "8px", fontFamily: "'Playfair Display', serif" }}>{cosmicData.story.charAt(0)}</span>
+                {cosmicData.story.substring(1)}
+              </div>
+            </article>
+
+            {/* Bottom Left: Astrology */}
+            <article style={{ borderTop: "2px dashed #2b2b2b", paddingTop: "20px", marginTop: "auto" }}>
+              <h3 style={{ fontSize: "20px", marginBottom: "15px", textTransform: "uppercase", textAlign: "center" }}>
+                Character & Destiny
+              </h3>
+              {cosmicData.astrology ? (
+                <div style={{ fontSize: "14px", lineHeight: "1.7", textAlign: "justify" }}>
+                  <p style={{ textAlign: "center", marginBottom: "10px", fontWeight: "bold" }}>
+                    Sun in {cosmicData.astrology.sunSign} &nbsp;&bull;&nbsp; Moon in {cosmicData.astrology.moonSign}
+                  </p>
+                  <p style={{ margin: 0 }}>{cosmicData.astrology.reading}</p>
+                </div>
+              ) : (
+                <p style={{ fontStyle: "italic", textAlign: "center" }}>Astrological readings are obscured by stardust.</p>
+              )}
+            </article>
+
+          </div>
+
+          {/* Right Column */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "30px", borderLeft: "2px solid #2b2b2b", paddingLeft: "40px" }}>
+            
+            {/* Top Right: NASA Image */}
+            <article>
+              <h3 style={{ fontSize: "26px", borderBottom: "2px solid #2b2b2b", paddingBottom: "5px", marginBottom: "15px", textTransform: "uppercase", lineHeight: "1.1" }}>
+                NASA Archive Discovery
+              </h3>
+              
+              {nasaData ? (
+                <div>
+                  {nasaData.mediaType === "video" ? (
+                    <iframe
+                      src={nasaData.url}
+                      title={nasaData.title}
+                      frameBorder="0"
+                      allow="encrypted-media"
+                      allowFullScreen
+                      style={{ width: "100%", aspectRatio: "16/9", border: "4px solid #2b2b2b", padding: "2px", backgroundColor: "#fff", marginBottom: "10px" }}
+                    />
+                  ) : (
+                    <img 
+                      src={nasaData.url} 
+                      alt={nasaData.title} 
+                      crossOrigin="anonymous"
+                      style={{ width: "100%", filter: "sepia(0.3) contrast(1.1) brightness(0.9)", border: "4px solid #2b2b2b", padding: "2px", backgroundColor: "#fff", marginBottom: "10px" }} 
+                    />
+                  )}
+                  <h4 style={{ margin: "0 0 5px 0", fontSize: "16px", textAlign: "center" }}>{nasaData.title}</h4>
+                  <p style={{ fontSize: "12px", textAlign: "justify", lineHeight: "1.6" }}>
+                    {nasaData.explanation.substring(0, 400)}...
+                  </p>
+                </div>
+              ) : (
+                <p style={{ fontStyle: "italic" }}>Archive records for this date are currently obscured by cosmic dust.</p>
+              )}
+            </article>
+
+            {/* Middle Right: Historical Events */}
+            <article style={{ borderTop: "2px solid #2b2b2b", paddingTop: "20px" }}>
+              <h3 style={{ fontSize: "18px", marginBottom: "10px", textTransform: "uppercase" }}>On This Day In History</h3>
+              {cosmicData.history && cosmicData.history.length > 0 ? (
+                <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px", lineHeight: "1.5" }}>
+                  {cosmicData.history.map((evt, idx) => (
+                    <li key={idx} style={{ marginBottom: "8px" }}>
+                      <strong>{evt.year}:</strong> {evt.text}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p style={{ fontSize: "13px", fontStyle: "italic" }}>The historical archives are silent for this date.</p>
+              )}
+            </article>
+
+            {/* Bottom Right: Earth Stats */}
+            <article style={{ borderTop: "2px solid #2b2b2b", paddingTop: "20px", marginTop: "auto", display: "flex", justifyContent: "space-between", backgroundColor: "rgba(0,0,0,0.03)", padding: "15px", border: "1px solid rgba(0,0,0,0.1)" }}>
+               <div style={{ textAlign: "center" }}>
+                 <span style={{ fontSize: "10px", textTransform: "uppercase", display: "block" }}>Day of Week</span>
+                 <strong>{cosmicData.earth?.dayOfWeek || "Unknown"}</strong>
+               </div>
+               <div style={{ textAlign: "center", borderLeft: "1px solid rgba(0,0,0,0.1)", borderRight: "1px solid rgba(0,0,0,0.1)", padding: "0 15px" }}>
+                 <span style={{ fontSize: "10px", textTransform: "uppercase", display: "block" }}>Season</span>
+                 <strong>{cosmicData.earth?.season || "Unknown"}</strong>
+               </div>
+               <div style={{ textAlign: "center" }}>
+                 <span style={{ fontSize: "10px", textTransform: "uppercase", display: "block" }}>Dist. to Sun</span>
+                 <strong>{cosmicData.earth?.distanceFromSun || "Unknown"}</strong>
+               </div>
+            </article>
+
           </div>
         </div>
 
-        {/* Footer */}
-        <div style={{ position: "absolute", bottom: "40px", left: "40px", right: "40px", borderTop: "2px solid #2b2b2b", paddingTop: "10px", display: "flex", justifyContent: "space-between", fontSize: "12px", textTransform: "uppercase" }}>
-          <span>Generated: {new Date().toLocaleDateString()}</span>
-          <span>Authentic Scientific Data</span>
-          <span>Cosmic Origin Observatory</span>
-        </div>
       </div>
     </div>
   );
