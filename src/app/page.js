@@ -126,7 +126,7 @@ export default function Home() {
   const hasRevealed = replayStage >= 2;
 
   return (
-    <main style={{ position: "relative", width: "100vw", height: "100vh", overflow: replayStage >= 3 ? "auto" : "hidden" }}>
+    <main style={{ position: "relative", width: "100vw", minHeight: "100vh", overflowX: "hidden", overflowY: "auto" }}>
       
       {replayStage === 4 && cosmicData && (
         <div style={{ position: "absolute", top: 0, left: 0, width: "100%", zIndex: 50, display: "flex", flexDirection: "column", alignItems: "center", padding: "50px 0", backgroundColor: "#111" }}>
@@ -190,7 +190,7 @@ export default function Home() {
                 The universe remembers the night you arrived.
               </p>
 
-              <form onSubmit={handleReveal} className="glass-panel" style={{ width: "350px", margin: "0 auto", maxHeight: "60vh", overflowY: "auto" }}>
+              <form onSubmit={handleReveal} className="glass-panel" style={{ width: "350px", margin: "0 auto", paddingBottom: "2rem" }}>
                 <div style={{ display: "flex", gap: "10px", marginBottom: "1.5rem" }}>
                   <div style={{ flex: 1, textAlign: "left" }}>
                     <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.9rem", color: "var(--color-accent)" }}>First Name</label>
