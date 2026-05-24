@@ -185,16 +185,16 @@ export default function Home() {
               transition={{ duration: 1.5, ease: "easeInOut" }}
               style={{ pointerEvents: "auto", textAlign: "center", zIndex: 10, marginTop: "20vh" }}
             >
-              <h1 style={{ fontSize: "4rem", marginBottom: "1rem", textShadow: "0 4px 20px rgba(0,0,0,0.8)", letterSpacing: "2px" }}>
+              <h1 className="title-main">
                 Cosmic Origin
               </h1>
-              <p style={{ fontSize: "1.2rem", marginBottom: "3rem", color: "var(--color-text-muted)" }}>
+              <p className="subtitle-main">
                 The universe remembers the night you arrived.
               </p>
 
-              <form onSubmit={handleReveal} className="glass-panel" style={{ width: "350px", margin: "0 auto", paddingBottom: "2rem" }}>
-                <div style={{ display: "flex", gap: "10px", marginBottom: "1.5rem" }}>
-                  <div style={{ flex: 1, textAlign: "left" }}>
+              <form onSubmit={handleReveal} className="glass-panel form-container">
+                <div className="responsive-row" style={{ marginBottom: "1.5rem" }}>
+                  <div style={{ flex: 1, textAlign: "left", width: "100%" }}>
                     <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.9rem", color: "var(--color-accent)" }}>First Name</label>
                     <input type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)} className="input-field" />
                   </div>
@@ -277,7 +277,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 2 }}
-              style={{ pointerEvents: "auto", width: "100%", maxWidth: "1200px", zIndex: 10, margin: "10vh auto", paddingBottom: "10vh" }}
+              className="dashboard-container"
             >
               <h2 style={{ textAlign: "center", fontSize: "3rem", marginBottom: "3rem", letterSpacing: "2px" }}>Your Cosmic Dashboard</h2>
               
@@ -318,8 +318,8 @@ export default function Home() {
                 )}
 
                 {/* Real Constellations */}
-            <div className="glass-panel" style={{ display: "flex", gap: "20px", width: "100%", maxWidth: "800px" }}>
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <div className="glass-panel responsive-row" style={{ maxWidth: "800px" }}>
+              <div className="responsive-col" style={{ justifyContent: "center" }}>
                 <h3 style={{ margin: "0 0 10px 0", color: "var(--color-accent)", fontSize: "1.2rem", textTransform: "uppercase", letterSpacing: "1px" }}>Real-World Constellations</h3>
                 <div style={{ marginBottom: "1rem" }}>
                   <strong style={{ display: "block", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "2px", opacity: 0.7 }}>The Sun resided in</strong>
@@ -331,7 +331,7 @@ export default function Home() {
                 </div>
                 <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", marginTop: "1rem" }}>Calculated exactly using their true Right Ascension and Declination.</p>
               </div>
-              <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", borderLeft: "1px solid rgba(255,255,255,0.1)", paddingLeft: "20px" }}>
+              <div className="responsive-divider" style={{ display: "flex", alignItems: "center" }}>
                 <PremiumMoon 
                   phaseAngle={cosmicData.moonPhaseDetails.phaseAngle} 
                   phaseName={cosmicData.moonPhaseDetails.phaseName}
@@ -359,7 +359,7 @@ export default function Home() {
                     <p style={{ margin: 0, fontSize: "0.85rem", opacity: 0.8, fontStyle: "italic" }}>
                       Hubble explores the universe 24 hours a day, 7 days a week. That means it has observed some fascinating cosmic wonder every day of the year, including on your birthday. Here is a real authentic picture from that date.
                     </p>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", marginTop: "10px" }}>
+                    <div className="responsive-row" style={{ marginTop: "10px" }}>
                        <div style={{ flex: "1 1 300px" }}>
                           <img src={cosmicData.hubble.url} alt={cosmicData.hubble.title} style={{ width: "100%", borderRadius: "4px", border: "1px solid rgba(255,255,255,0.2)" }} />
                        </div>
@@ -391,7 +391,7 @@ export default function Home() {
               </div>
 
               {/* Action Buttons */}
-              <div style={{ textAlign: "center", display: "flex", justifyContent: "center", gap: "1rem", marginTop: "2rem" }}>
+              <div style={{ textAlign: "center", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1rem", marginTop: "2rem" }}>
                 <button 
                   onClick={() => setReplayStage(4)} 
                   className="btn-primary" 
