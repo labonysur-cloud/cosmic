@@ -100,6 +100,36 @@ const CosmicNewspaper = React.forwardRef(({ cosmicData, nasaData }, ref) => {
               </div>
             </article>
 
+            {/* Middle Left: The beautiful landscape name feature */}
+            {(cosmicData.firstName || cosmicData.lastName) && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "20px 0" }}>
+                <span style={{ fontSize: "12px", textTransform: "uppercase", letterSpacing: "3px", marginBottom: "15px", color: "#555", borderBottom: "1px solid #dcd3b6", paddingBottom: "5px" }}>
+                  A Name Etched in Earth & Sky
+                </span>
+                <h2 style={{
+                  fontSize: "clamp(48px, 10vw, 72px)",
+                  margin: 0,
+                  textTransform: "uppercase",
+                  fontWeight: "900",
+                  fontFamily: "'Inter', sans-serif",
+                  backgroundImage: "url('https://images.unsplash.com/photo-1506744626753-140285362554?q=80&w=800')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                  textAlign: "center",
+                  lineHeight: "1",
+                  paddingBottom: "5px",
+                  wordBreak: "break-all"
+                }}>
+                  {cosmicData.firstName}
+                </h2>
+                <div style={{ fontSize: "24px", fontStyle: "italic", marginTop: "5px", color: "#4a4a4a" }}>
+                  {cosmicData.lastName}
+                </div>
+              </div>
+            )}
+
             {/* Bottom Left: Astrology */}
             <article style={{ borderTop: "2px dashed #2b2b2b", paddingTop: "20px", marginTop: "auto" }}>
               <h3 style={{ fontSize: "20px", marginBottom: "15px", textTransform: "uppercase", textAlign: "center" }}>

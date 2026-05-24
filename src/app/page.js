@@ -14,6 +14,8 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 export default function Home() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [birthTime, setBirthTime] = useState("");
   const [birthPlace, setBirthPlace] = useState("");
@@ -65,6 +67,8 @@ export default function Home() {
 
     const fullCosmicData = {
       ...astData,
+      firstName,
+      lastName,
       history: historyData,
       astrology: astrologyData,
       earth: earthData
@@ -175,6 +179,16 @@ export default function Home() {
               </p>
 
               <form onSubmit={handleReveal} className="glass-panel" style={{ width: "350px", margin: "0 auto" }}>
+                <div style={{ display: "flex", gap: "10px", marginBottom: "1.5rem" }}>
+                  <div style={{ flex: 1, textAlign: "left" }}>
+                    <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.9rem", color: "var(--color-accent)" }}>First Name</label>
+                    <input type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)} className="input-field" />
+                  </div>
+                  <div style={{ flex: 1, textAlign: "left" }}>
+                    <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.9rem", color: "var(--color-accent)" }}>Last Name</label>
+                    <input type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)} className="input-field" />
+                  </div>
+                </div>
                 <div style={{ marginBottom: "1.5rem", textAlign: "left" }}>
                   <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.9rem", color: "var(--color-accent)" }}>Date of Arrival</label>
                   <input 
