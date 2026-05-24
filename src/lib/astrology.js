@@ -1,4 +1,4 @@
-import { Ecliptic, Body, MakeTime } from 'astronomy-engine';
+import { Ecliptic, GeoVector, Body, MakeTime } from 'astronomy-engine';
 
 const ZODIAC_SIGNS = [
   "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -41,8 +41,8 @@ export function getAstrologicalData(dateStr, timeStr) {
   const astroTime = MakeTime(date);
   
   try {
-    const sunEcliptic = Ecliptic(Body.Sun, astroTime);
-    const moonEcliptic = Ecliptic(Body.Moon, astroTime);
+    const sunEcliptic = Ecliptic(GeoVector(Body.Sun, astroTime, true));
+    const moonEcliptic = Ecliptic(GeoVector(Body.Moon, astroTime, true));
     
     const sunSign = getZodiacSign(sunEcliptic.elon);
     const moonSign = getZodiacSign(moonEcliptic.elon);
