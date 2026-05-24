@@ -101,31 +101,17 @@ const CosmicNewspaper = React.forwardRef(({ cosmicData, nasaData }, ref) => {
             </article>
 
             {/* Middle Left: The beautiful landscape name feature */}
-            {(cosmicData.firstName || cosmicData.lastName) && (
+            {cosmicData.landsat && cosmicData.landsat.length > 0 && (
               <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "20px 0" }}>
                 <span style={{ fontSize: "12px", textTransform: "uppercase", letterSpacing: "3px", marginBottom: "15px", color: "#555", borderBottom: "1px solid #dcd3b6", paddingBottom: "5px" }}>
-                  A Name Etched in Earth & Sky
+                  A Name Etched in Earth
                 </span>
-                <h2 style={{
-                  fontSize: "clamp(48px, 10vw, 72px)",
-                  margin: 0,
-                  textTransform: "uppercase",
-                  fontWeight: "900",
-                  fontFamily: "'Inter', sans-serif",
-                  background: "url('https://images.unsplash.com/photo-1506744626753-140285362554?q=80&w=800') center/cover no-repeat #4a4a4a",
-                  WebkitBackgroundClip: "text",
-                  backgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  color: "transparent",
-                  textAlign: "center",
-                  lineHeight: "1.1",
-                  paddingBottom: "5px",
-                  wordBreak: "break-all",
-                  minHeight: "1em"
-                }}>
-                  {cosmicData.firstName || "Cosmos"}
-                </h2>
-                <div style={{ fontSize: "24px", fontStyle: "italic", marginTop: "5px", color: "#4a4a4a" }}>
+                <div style={{ display: "flex", gap: "3px", justifyContent: "center", flexWrap: "wrap", marginBottom: "10px" }}>
+                  {cosmicData.landsat.map(l => (
+                    <img key={l.id} src={l.url} alt={l.char} crossOrigin="anonymous" style={{ width: "clamp(40px, 8vw, 65px)", height: "clamp(40px, 8vw, 65px)", objectFit: "cover", filter: "sepia(0.4) contrast(1.1) brightness(0.9)", border: "2px solid #2b2b2b", padding: "1px" }} />
+                  ))}
+                </div>
+                <div style={{ fontSize: "24px", fontStyle: "italic", marginTop: "10px", color: "#4a4a4a" }}>
                   {cosmicData.lastName}
                 </div>
               </div>
@@ -139,7 +125,7 @@ const CosmicNewspaper = React.forwardRef(({ cosmicData, nasaData }, ref) => {
               {cosmicData.astrology ? (
                 <div style={{ fontSize: "14px", lineHeight: "1.7", textAlign: "justify" }}>
                   <p style={{ textAlign: "center", marginBottom: "10px", fontWeight: "bold" }}>
-                    Sun in {cosmicData.astrology.sunSign} &nbsp;&bull;&nbsp; Moon in {cosmicData.astrology.moonSign}
+                    Sun in {cosmicData.astrology.realSunConstellation} &nbsp;&bull;&nbsp; Moon in {cosmicData.astrology.realMoonConstellation}
                   </p>
                   <p style={{ margin: 0 }}>{cosmicData.astrology.reading}</p>
                 </div>
@@ -203,6 +189,20 @@ const CosmicNewspaper = React.forwardRef(({ cosmicData, nasaData }, ref) => {
                 <p style={{ fontSize: "13px", fontStyle: "italic" }}>The historical archives are silent for this date.</p>
               )}
             </article>
+
+            {/* The Internet Archive */}
+            {cosmicData.wayback && cosmicData.wayback.length > 0 && (
+              <article style={{ borderTop: "2px solid #2b2b2b", paddingTop: "20px", marginTop: "20px" }}>
+                <h3 style={{ fontSize: "18px", marginBottom: "10px", textTransform: "uppercase" }}>The Digital Vault</h3>
+                <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "13px", lineHeight: "1.5" }}>
+                  {cosmicData.wayback.map((s, idx) => (
+                    <li key={idx} style={{ marginBottom: "8px" }}>
+                      An archived snapshot of <strong>{s.site}</strong> was permanently recorded in the Wayback Machine on this very day.
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            )}
 
             {/* Bottom Right: Earth Stats */}
             <article style={{ borderTop: "2px solid #2b2b2b", paddingTop: "20px", marginTop: "auto", display: "flex", justifyContent: "space-between", backgroundColor: "rgba(0,0,0,0.03)", padding: "15px", border: "1px solid rgba(0,0,0,0.1)" }}>

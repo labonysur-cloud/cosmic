@@ -42,3 +42,29 @@ export async function getNASAImageForDate(dateStr) {
     return null;
   }
 }
+
+export async function getNASAImagesForDate(dateStr) {
+  try {
+    const dateObj = new Date(dateStr);
+    const year = dateObj.getFullYear();
+    // Search NASA's entire library for things around that year that are related to space/earth
+    const res = await fetch(`https://images-api.nasa.gov/search?q=space&year_start=${year}&year_end=${year}&media_type=image`);
+    if (!res.ok) return [];
+    
+    const data = await res.json();
+    if (data.collection && data.collection.items && data.collection.items.length > 0) {
+      // shuffle and get 4
+      const items = data.collection.items.sort(() => 0.5 - Math.random()).slice(0, 4);
+      return items.map(item => ({
+        title: item.data[0].title,
+        explanation: item.data[0].description,
+        url: item.links[0].href,
+        date_created: item.data[0].date_created
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error("Failed to fetch NASA Library images:", error);
+    return [];
+  }
+}

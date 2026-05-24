@@ -3,12 +3,12 @@
 import { useState, useRef, useEffect } from "react";
 import CosmicScene from "@/components/CosmicScene";
 import CosmicNewspaper from "@/components/CosmicNewspaper";
-import CosmicIdentityCard from "@/components/CosmicIdentityCard";
 import { getRealInfo } from "@/lib/astronomy";
-import { getNASAImageForDate } from "@/lib/nasa";
-import { getHistoricalEvents } from "@/lib/history";
+import { getNASAImageForDate, getNASAImagesForDate } from "@/lib/nasa";
+import { getHistoricalEvents, getWaybackMachineSnapshots } from "@/lib/history";
 import { getAstrologicalData } from "@/lib/astrology";
 import { getEarthStats } from "@/lib/earth";
+import { getLandsatLetters } from "@/lib/landsat";
 import { motion, AnimatePresence } from "framer-motion";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -62,16 +62,22 @@ export default function Home() {
     });
     
     const historyData = await getHistoricalEvents(birthDate);
+    const waybackData = await getWaybackMachineSnapshots(birthDate);
     const astrologyData = getAstrologicalData(birthDate, birthTime);
     const earthData = getEarthStats(birthDate, lat);
+    const landsatData = getLandsatLetters(firstName);
+    const nasaImagesData = await getNASAImagesForDate(birthDate);
 
     const fullCosmicData = {
       ...astData,
       firstName,
       lastName,
       history: historyData,
+      wayback: waybackData,
       astrology: astrologyData,
-      earth: earthData
+      earth: earthData,
+      landsat: landsatData,
+      nasaImages: nasaImagesData
     };
 
     const nData = await getNASAImageForDate(birthDate);
@@ -120,10 +126,16 @@ export default function Home() {
   const hasRevealed = replayStage >= 2;
 
   return (
-    <main style={{ position: "relative", width: "100vw", height: "100vh", overflow: replayStage === 3 ? "auto" : "hidden" }}>
+    <main style={{ position: "relative", width: "100vw", height: "100vh", overflow: replayStage >= 3 ? "auto" : "hidden" }}>
       
-      {replayStage === 3 && cosmicData && (
-        <CosmicNewspaper ref={newspaperRef} cosmicData={cosmicData} nasaData={nasaData} />
+      {replayStage === 4 && cosmicData && (
+        <div style={{ position: "absolute", top: 0, left: 0, width: "100%", zIndex: 50, display: "flex", flexDirection: "column", alignItems: "center", padding: "50px 0", backgroundColor: "#111" }}>
+           <CosmicNewspaper ref={newspaperRef} cosmicData={cosmicData} nasaData={nasaData} />
+           <div style={{ marginTop: "40px", display: "flex", gap: "20px" }}>
+             <button onClick={handleDownloadNewspaper} className="btn-primary">Download PDF</button>
+             <button onClick={() => setReplayStage(3)} className="btn-primary" style={{ background: "transparent", border: "1px solid var(--color-accent)" }}>Back to Dashboard</button>
+           </div>
+        </div>
       )}
 
       {/* Export Overlay */}
@@ -178,7 +190,7 @@ export default function Home() {
                 The universe remembers the night you arrived.
               </p>
 
-              <form onSubmit={handleReveal} className="glass-panel" style={{ width: "350px", margin: "0 auto" }}>
+              <form onSubmit={handleReveal} className="glass-panel" style={{ width: "350px", margin: "0 auto", maxHeight: "60vh", overflowY: "auto" }}>
                 <div style={{ display: "flex", gap: "10px", marginBottom: "1.5rem" }}>
                   <div style={{ flex: 1, textAlign: "left" }}>
                     <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.9rem", color: "var(--color-accent)" }}>First Name</label>
@@ -259,57 +271,98 @@ export default function Home() {
 
           {replayStage === 3 && (
             <motion.div 
-              key="revealed"
+              key="dashboard"
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 2 }}
-              style={{ pointerEvents: "auto", width: "100%", maxWidth: "900px", zIndex: 10, margin: "10vh auto", paddingBottom: "10vh" }}
+              style={{ pointerEvents: "auto", width: "100%", maxWidth: "1200px", zIndex: 10, margin: "10vh auto", paddingBottom: "10vh" }}
             >
-              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "2rem", marginBottom: "4rem" }}>
-                {/* Holographic ID Card */}
-                <CosmicIdentityCard cosmicData={cosmicData} />
+              <h2 style={{ textAlign: "center", fontSize: "3rem", marginBottom: "3rem", letterSpacing: "2px" }}>Your Cosmic Dashboard</h2>
+              
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "2rem", marginBottom: "4rem" }}>
+                
+                {/* Landsat Alphabet Card */}
+                {cosmicData.landsat && cosmicData.landsat.length > 0 && (
+                  <div className="glass-panel" style={{ textAlign: "center" }}>
+                    <h3 style={{ color: "var(--color-accent)", marginBottom: "1.5rem", fontSize: "1.2rem" }}>Your Name in Landsat</h3>
+                    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "5px", marginBottom: "1rem" }}>
+                      {cosmicData.landsat.map(l => (
+                        <div key={l.id} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                          <img src={l.url} alt={`Landsat ${l.char}`} style={{ width: "60px", height: "60px", borderRadius: "4px", border: "1px solid rgba(255,255,255,0.2)", objectFit: "cover" }} />
+                          <span style={{ fontSize: "10px", marginTop: "5px", color: "#ccc" }}>{l.char}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)" }}>Spelled using genuine satellite imagery mimicking letterforms.</p>
+                  </div>
+                )}
 
-                {/* NASA Image Section next to card */}
-                {nasaData && (
-                  <div className="glass-panel" style={{ flex: "1", minWidth: "350px", textAlign: "left" }}>
-                    <h4 style={{ fontSize: "1.2rem", color: "var(--color-accent)", marginBottom: "1rem" }}>NASA Archive</h4>
-                    {nasaData.mediaType === "video" ? (
-                      <iframe
-                        src={nasaData.url}
-                        title={nasaData.title}
-                        frameBorder="0"
-                        allow="encrypted-media"
-                        allowFullScreen
-                        style={{ width: "100%", aspectRatio: "16/9", borderRadius: "8px", marginBottom: "1.5rem", border: "1px solid rgba(255,255,255,0.1)" }}
-                      />
-                    ) : (
-                      <img 
-                        src={nasaData.url} 
-                        alt={nasaData.title} 
-                        crossOrigin="anonymous"
-                        style={{ width: "100%", borderRadius: "8px", marginBottom: "1.5rem", border: "1px solid rgba(255,255,255,0.1)" }} 
-                      />
-                    )}
-                    <h5 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>{nasaData.title}</h5>
-                    <p style={{ fontSize: "0.85rem", lineHeight: "1.6", color: "var(--color-text-muted)" }}>
-                      {nasaData.explanation.substring(0, 400)}...
-                    </p>
+                {/* Wayback Machine Card */}
+                {cosmicData.wayback && cosmicData.wayback.length > 0 && (
+                  <div className="glass-panel" style={{ textAlign: "left" }}>
+                    <h3 style={{ color: "var(--color-accent)", marginBottom: "1.5rem", fontSize: "1.2rem" }}>The Internet on this Day</h3>
+                    <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "1rem" }}>
+                      {cosmicData.wayback.map(s => (
+                        <li key={s.site} style={{ padding: "10px", backgroundColor: "rgba(0,0,0,0.2)", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                          <a href={s.url} target="_blank" rel="noopener noreferrer" style={{ color: "#fff", textDecoration: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <strong>{s.site}</strong>
+                            <span style={{ fontSize: "0.8rem", color: "var(--color-accent)" }}>View Archive &rarr;</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                    <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", marginTop: "1.5rem" }}>Click to explore the archived websites exactly as they were.</p>
+                  </div>
+                )}
+
+                {/* Real Constellations & Astronomy */}
+                <div className="glass-panel" style={{ textAlign: "left" }}>
+                  <h3 style={{ color: "var(--color-accent)", marginBottom: "1.5rem", fontSize: "1.2rem" }}>Real-World Constellations</h3>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+                    <div style={{ padding: "10px", backgroundColor: "rgba(0,0,0,0.2)", borderRadius: "8px" }}>
+                       <div style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", textTransform: "uppercase" }}>The Sun resided in</div>
+                       <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{cosmicData.astrology?.realSunConstellation}</div>
+                    </div>
+                    <div style={{ padding: "10px", backgroundColor: "rgba(0,0,0,0.2)", borderRadius: "8px" }}>
+                       <div style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", textTransform: "uppercase" }}>The Moon resided in</div>
+                       <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{cosmicData.astrology?.realMoonConstellation}</div>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", marginTop: "1rem" }}>Calculated exactly using their true Right Ascension and Declination.</p>
+                </div>
+
+                {/* Real NASA Photos */}
+                {cosmicData.nasaImages && cosmicData.nasaImages.length > 0 && (
+                  <div className="glass-panel" style={{ textAlign: "left", gridColumn: "1 / -1" }}>
+                    <h3 style={{ color: "var(--color-accent)", marginBottom: "1.5rem", fontSize: "1.2rem" }}>Real NASA Archives from {cosmicData.date.split('-')[0]}</h3>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+                      {cosmicData.nasaImages.map((img, i) => (
+                        <div key={i} style={{ borderRadius: "8px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+                          <img src={img.url} alt={img.title} style={{ width: "100%", height: "150px", objectFit: "cover" }} />
+                          <div style={{ padding: "10px", fontSize: "0.8rem" }}>
+                            <strong>{img.title}</strong>
+                            <p style={{ color: "var(--color-text-muted)", margin: "5px 0 0 0", fontSize: "0.7rem", height: "40px", overflow: "hidden" }}>{img.explanation}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div style={{ textAlign: "center", display: "flex", justifyContent: "center", gap: "1rem" }}>
+              <div style={{ textAlign: "center", display: "flex", justifyContent: "center", gap: "1rem", marginTop: "2rem" }}>
                 <button 
-                  onClick={handleDownloadNewspaper} 
+                  onClick={() => setReplayStage(4)} 
                   className="btn-primary" 
-                  style={{ background: "linear-gradient(135deg, rgba(200,180,120,0.2), rgba(200,180,120,0.05))", borderColor: "rgba(200,180,120,0.4)" }}
+                  style={{ background: "linear-gradient(135deg, rgba(200,180,120,0.2), rgba(200,180,120,0.05))", borderColor: "rgba(200,180,120,0.4)", fontSize: "1.2rem", padding: "1rem 2rem" }}
                 >
-                  Export Cosmic Newspaper
+                  Compile Cosmic Newspaper
                 </button>
                 <button 
                   onClick={() => setReplayStage(0)} 
                   className="btn-primary" 
+                  style={{ fontSize: "1.2rem", padding: "1rem 2rem" }}
                 >
                   Return to Earth
                 </button>

@@ -24,3 +24,33 @@ export async function getHistoricalEvents(dateStr) {
     return [];
   }
 }
+
+export async function getWaybackMachineSnapshots(dateStr) {
+  try {
+    const timestamp = dateStr.replace(/-/g, '');
+    const urls = ['nytimes.com', 'apple.com', 'yahoo.com'];
+    const snapshots = [];
+    
+    // We can do Promise.all for speed
+    const fetches = urls.map(url => 
+      fetch(`https://archive.org/wayback/available?url=${url}&timestamp=${timestamp}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.archived_snapshots && data.archived_snapshots.closest) {
+            snapshots.push({
+              site: url,
+              url: data.archived_snapshots.closest.url,
+              timestamp: data.archived_snapshots.closest.timestamp
+            });
+          }
+        })
+        .catch(err => console.error(err))
+    );
+    
+    await Promise.all(fetches);
+    return snapshots;
+  } catch (err) {
+    console.error("Failed to fetch Wayback Machine:", err);
+    return [];
+  }
+}

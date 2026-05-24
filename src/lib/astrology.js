@@ -1,4 +1,4 @@
-import { Ecliptic, GeoVector, Body, MakeTime } from 'astronomy-engine';
+import { Ecliptic, GeoVector, Body, MakeTime, Equator, Constellation } from 'astronomy-engine';
 
 const ZODIAC_SIGNS = [
   "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -44,12 +44,20 @@ export function getAstrologicalData(dateStr, timeStr) {
     const sunEcliptic = Ecliptic(GeoVector(Body.Sun, astroTime, true));
     const moonEcliptic = Ecliptic(GeoVector(Body.Moon, astroTime, true));
     
+    const sunEq = Equator(Body.Sun, astroTime, null, true, true);
+    const moonEq = Equator(Body.Moon, astroTime, null, true, true);
+
+    const sunConstellation = Constellation(sunEq.ra, sunEq.dec);
+    const moonConstellation = Constellation(moonEq.ra, moonEq.dec);
+
     const sunSign = getZodiacSign(sunEcliptic.elon);
     const moonSign = getZodiacSign(moonEcliptic.elon);
     
     return {
       sunSign,
       moonSign,
+      realSunConstellation: sunConstellation.name,
+      realMoonConstellation: moonConstellation.name,
       reading: getZodiacTraits(sunSign, moonSign)
     };
   } catch(e) {
