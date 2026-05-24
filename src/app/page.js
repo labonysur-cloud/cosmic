@@ -59,40 +59,62 @@ export default function Home() {
     const exactTime = birthTime || "12:00"; 
     const dateOfArrival = `${birthDate}T${exactTime}:00Z`;
 
-    const astData = getRealInfo(dateOfArrival, exactTime);
-    const astrologyData = await getAstrologicalData(dateOfArrival, exactTime);
-    const geocoded = await getCoordinates(birthPlace);
-    const earthData = getEarthStats(dateOfArrival, geocoded?.lat || 0);
-    const landsatData = getLandsatLetters(firstName);
-    const nasaImagesData = await getNASAImagesForDate(birthDate);
-    const hubbleData = await getHubbleImageForDate(birthDate);
+    try {
+      const astData = getRealInfo({
+        dateStr: birthDate,
+        timeStr: exactTime,
+        lat: lat,
+        lon: lon,
+        locationName: finalLocationName
+      });
+      const astrologyData = await getAstrologicalData(birthDate, exactTime);
+      const geocoded = await getCoordinates(birthPlace);
+      const earthData = getEarthStats(dateOfArrival, geocoded?.lat || lat || 0);
+      const landsatData = getLandsatLetters(firstName);
+      const nasaImagesData = await getNASAImagesForDate(birthDate);
+      const hubbleData = await getHubbleImageForDate(birthDate);
+      const historyData = await getHistoricalEvents(birthDate);
+      const waybackData = await getWaybackMachineSnapshots(birthDate);
+      const nData = await getNASAImageForDate(birthDate);
 
-    const fullCosmicData = {
-      ...astData,
-      firstName,
-      lastName,
-      birthDate: dateOfArrival,
-      birthTime: exactTime,
-      birthPlace,
-      geocoded: geocoded || { lat: 0, lon: 0, name: birthPlace },
-      astrology: astrologyData,
-      earth: earthData,
-      landsat: landsatData,
-      nasaImages: nasaImagesData,
-      hubble: hubbleData
-    };
+      const fullCosmicData = {
+        ...astData,
+        firstName,
+        lastName,
+        birthDate: dateOfArrival,
+        birthTime: exactTime,
+        birthPlace,
+        geocoded: geocoded || { lat: lat || 0, lon: lon || 0, name: finalLocationName || birthPlace },
+        astrology: astrologyData,
+        earth: earthData,
+        landsat: landsatData,
+        nasaImages: nasaImagesData,
+        hubble: hubbleData,
+        history: historyData,
+        wayback: waybackData,
+        nasaData: nData,
+        sunConstellation: astrologyData?.realSunConstellation || "Unknown",
+        moonConstellation: astrologyData?.realMoonConstellation || "Unknown",
+        moonPhaseDetails: {
+          phaseAngle: astData?.moonPhaseAngle || 0,
+          phaseName: astData?.moonPhase || "Unknown"
+        }
+      };
 
-    const nData = await getNASAImageForDate(birthDate);
-    
-    setCosmicData(fullCosmicData);
-    setNasaData(nData);
-    
-    setIsLoading(false);
-    
-    // Trigger Cinematic Replay Sequence
-    setReplayStage(1); // Zoom to Earth
-    setTimeout(() => setReplayStage(2), 4000); // 4 seconds later, Earth zooms out to reveal Moon
-    setTimeout(() => setReplayStage(3), 8000); // 8 seconds total, full UI fades in
+      setCosmicData(fullCosmicData);
+      setNasaData(nData);
+      
+      setIsLoading(false);
+      
+      // Trigger Cinematic Replay Sequence
+      setReplayStage(1); // Zoom to Earth
+      setTimeout(() => setReplayStage(2), 4000); // 4 seconds later, Earth zooms out to reveal Moon
+      setTimeout(() => setReplayStage(3), 8000); // 8 seconds total, full UI fades in
+    } catch (error) {
+      console.error("Reveal Error:", error);
+      setIsLoading(false);
+      alert("Failed to compile archives. Please check your inputs.");
+    }
   };
 
   const handleDownloadNewspaper = async () => {
