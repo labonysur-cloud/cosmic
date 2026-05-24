@@ -190,6 +190,34 @@ const CosmicNewspaper = React.forwardRef(({ cosmicData, nasaData }, ref) => {
               )}
             </article>
 
+            {/* Bottom Left: The Iconic NASA Archive Image */}
+            <article style={{ borderTop: "2px solid #2b2b2b", paddingTop: "20px", marginTop: "20px" }}>
+              <h3 style={{ fontSize: "18px", marginBottom: "10px", textTransform: "uppercase" }}>A Glimpse From Above</h3>
+              {cosmicData.nasaData && cosmicData.nasaData.mediaType === "image" ? (
+                <>
+                  <img src={cosmicData.nasaData.url} alt="NASA" crossOrigin="anonymous" style={{ width: "100%", marginBottom: "10px", border: "1px solid #2b2b2b", filter: "sepia(0.2) contrast(1.1)" }} />
+                  <h4 style={{ margin: "0 0 5px 0", fontSize: "14px" }}>{cosmicData.nasaData.title}</h4>
+                  <p style={{ fontSize: "13px", lineHeight: "1.5", margin: 0, display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                    {cosmicData.nasaData.explanation}
+                  </p>
+                </>
+              ) : (
+                <p style={{ fontSize: "13px", fontStyle: "italic" }}>The celestial archives were closed this day.</p>
+              )}
+            </article>
+
+            {/* What Did Hubble See on Your Birthday? */}
+            {cosmicData.hubble && (
+              <article style={{ borderTop: "2px solid #2b2b2b", paddingTop: "20px", marginTop: "20px" }}>
+                <h3 style={{ fontSize: "18px", marginBottom: "10px", textTransform: "uppercase" }}>What Did Hubble See on Your Birthday?</h3>
+                <img src={cosmicData.hubble.url} alt="Hubble" crossOrigin="anonymous" style={{ width: "100%", marginBottom: "10px", border: "1px solid #2b2b2b", filter: "sepia(0.2) contrast(1.1)" }} />
+                <h4 style={{ margin: "0 0 5px 0", fontSize: "14px" }}>{cosmicData.hubble.title}</h4>
+                <p style={{ fontSize: "13px", lineHeight: "1.5", margin: 0, display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                  {cosmicData.hubble.explanation}
+                </p>
+              </article>
+            )}
+
             {/* The Internet Archive */}
             {cosmicData.wayback && cosmicData.wayback.length > 0 && (
               <article style={{ borderTop: "2px solid #2b2b2b", paddingTop: "20px", marginTop: "20px" }}>

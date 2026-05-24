@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import CosmicScene from "@/components/CosmicScene";
 import CosmicNewspaper from "@/components/CosmicNewspaper";
 import { getRealInfo } from "@/lib/astronomy";
-import { getNASAImageForDate, getNASAImagesForDate } from "@/lib/nasa";
+import { getNASAImageForDate, getNASAImagesForDate, getHubbleImageForDate } from "@/lib/nasa";
 import { getHistoricalEvents, getWaybackMachineSnapshots } from "@/lib/history";
 import { getAstrologicalData } from "@/lib/astrology";
 import { getEarthStats } from "@/lib/earth";
@@ -67,6 +67,7 @@ export default function Home() {
     const earthData = getEarthStats(birthDate, lat);
     const landsatData = getLandsatLetters(firstName);
     const nasaImagesData = await getNASAImagesForDate(birthDate);
+    const hubbleData = await getHubbleImageForDate(birthDate);
 
     const fullCosmicData = {
       ...astData,
@@ -77,7 +78,8 @@ export default function Home() {
       astrology: astrologyData,
       earth: earthData,
       landsat: landsatData,
-      nasaImages: nasaImagesData
+      nasaImages: nasaImagesData,
+      hubble: hubbleData
     };
 
     const nData = await getNASAImageForDate(birthDate);
@@ -330,6 +332,27 @@ export default function Home() {
                   </div>
                   <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", marginTop: "1rem" }}>Calculated exactly using their true Right Ascension and Declination.</p>
                 </div>
+
+                {/* What Did Hubble See on Your Birthday? */}
+                {cosmicData.hubble && (
+                  <div className="glass-panel" style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%", maxWidth: "800px" }}>
+                    <h3 style={{ margin: 0, color: "var(--color-accent)", fontSize: "1.2rem", textTransform: "uppercase", letterSpacing: "1px" }}>
+                      What Did Hubble See on Your Birthday?
+                    </h3>
+                    <p style={{ margin: 0, fontSize: "0.85rem", opacity: 0.8, fontStyle: "italic" }}>
+                      Hubble explores the universe 24 hours a day, 7 days a week. That means it has observed some fascinating cosmic wonder every day of the year, including on your birthday. Here is a real authentic picture from that date.
+                    </p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", marginTop: "10px" }}>
+                       <div style={{ flex: "1 1 300px" }}>
+                          <img src={cosmicData.hubble.url} alt={cosmicData.hubble.title} style={{ width: "100%", borderRadius: "4px", border: "1px solid rgba(255,255,255,0.2)" }} />
+                       </div>
+                       <div style={{ flex: "2 1 300px" }}>
+                          <h4 style={{ margin: "0 0 10px 0" }}>{cosmicData.hubble.title}</h4>
+                          <p style={{ fontSize: "0.85rem", lineHeight: "1.5", maxHeight: "150px", overflowY: "auto" }}>{cosmicData.hubble.explanation}</p>
+                       </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Real NASA Photos */}
                 {cosmicData.nasaImages && cosmicData.nasaImages.length > 0 && (

@@ -68,3 +68,44 @@ export async function getNASAImagesForDate(dateStr) {
     return [];
   }
 }
+
+export async function getHubbleImageForDate(dateStr) {
+  try {
+    const dateObj = new Date(dateStr);
+    const month = dateObj.toLocaleString('en-US', { month: 'long' });
+    const day = dateObj.getDate();
+    // Query images-api.nasa.gov for "hubble <month> <day>" to get the best matches.
+    const res = await fetch(`https://images-api.nasa.gov/search?q=hubble%20${month}%20${day}&media_type=image`);
+    if (!res.ok) return null;
+    
+    const data = await res.json();
+    if (data.collection && data.collection.items && data.collection.items.length > 0) {
+      const item = data.collection.items[0]; 
+      return {
+        title: item.data[0].title,
+        explanation: item.data[0].description,
+        url: item.links[0].href,
+        date_created: item.data[0].date_created
+      };
+    }
+    
+    // Fallback: Just search for "hubble" and the birth year
+    const year = dateObj.getFullYear();
+    const fallbackRes = await fetch(`https://images-api.nasa.gov/search?q=hubble&year_start=${year}&year_end=${year}&media_type=image`);
+    const fallbackData = await fallbackRes.json();
+    if (fallbackData.collection && fallbackData.collection.items && fallbackData.collection.items.length > 0) {
+      const item = fallbackData.collection.items[0];
+      return {
+        title: item.data[0].title,
+        explanation: item.data[0].description,
+        url: item.links[0].href,
+        date_created: item.data[0].date_created
+      };
+    }
+    
+    return null;
+  } catch (error) {
+    console.error("Failed to fetch Hubble image:", error);
+    return null;
+  }
+}
