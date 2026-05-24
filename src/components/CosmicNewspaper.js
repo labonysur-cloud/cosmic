@@ -112,17 +112,18 @@ const CosmicNewspaper = React.forwardRef(({ cosmicData, nasaData }, ref) => {
                   textTransform: "uppercase",
                   fontWeight: "900",
                   fontFamily: "'Inter', sans-serif",
-                  backgroundImage: "url('https://images.unsplash.com/photo-1506744626753-140285362554?q=80&w=800')",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
+                  background: "url('https://images.unsplash.com/photo-1506744626753-140285362554?q=80&w=800') center/cover no-repeat #4a4a4a",
                   WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
                   color: "transparent",
                   textAlign: "center",
-                  lineHeight: "1",
+                  lineHeight: "1.1",
                   paddingBottom: "5px",
-                  wordBreak: "break-all"
+                  wordBreak: "break-all",
+                  minHeight: "1em"
                 }}>
-                  {cosmicData.firstName}
+                  {cosmicData.firstName || "Cosmos"}
                 </h2>
                 <div style={{ fontSize: "24px", fontStyle: "italic", marginTop: "5px", color: "#4a4a4a" }}>
                   {cosmicData.lastName}
