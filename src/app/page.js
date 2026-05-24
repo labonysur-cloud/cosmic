@@ -4,12 +4,14 @@ import { useState, useRef, useEffect } from "react";
 import CosmicScene from "@/components/CosmicScene";
 import CosmicNewspaper from "@/components/CosmicNewspaper";
 import PremiumMoon from "@/components/PremiumMoon";
+import PremiumStarMap from "@/components/PremiumStarMap";
 import { getRealInfo } from "@/lib/astronomy";
 import { getNASAImageForDate, getNASAImagesForDate, getHubbleImageForDate } from "@/lib/nasa";
 import { getHistoricalEvents, getWaybackMachineSnapshots } from "@/lib/history";
 import { getAstrologicalData } from "@/lib/astrology";
 import { getEarthStats } from "@/lib/earth";
 import { getLandsatLetters } from "@/lib/landsat";
+import { getCoordinates } from "@/lib/geocoding";
 import { motion, AnimatePresence } from "framer-motion";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -54,18 +56,13 @@ export default function Home() {
       }
     }
 
-    const astData = getRealInfo({
-      dateStr: birthDate,
-      timeStr: birthTime,
-      lat,
-      lon,
-      locationName: finalLocationName
-    });
-    
-    const historyData = await getHistoricalEvents(birthDate);
-    const waybackData = await getWaybackMachineSnapshots(birthDate);
-    const astrologyData = getAstrologicalData(birthDate, birthTime);
-    const earthData = getEarthStats(birthDate, lat);
+    const exactTime = birthTime || "12:00"; 
+    const dateOfArrival = `${birthDate}T${exactTime}:00Z`;
+
+    const astData = getRealInfo(dateOfArrival, exactTime);
+    const astrologyData = await getAstrologicalData(dateOfArrival, exactTime);
+    const geocoded = await getCoordinates(birthPlace);
+    const earthData = getEarthStats(dateOfArrival, geocoded?.lat || 0);
     const landsatData = getLandsatLetters(firstName);
     const nasaImagesData = await getNASAImagesForDate(birthDate);
     const hubbleData = await getHubbleImageForDate(birthDate);
@@ -74,8 +71,10 @@ export default function Home() {
       ...astData,
       firstName,
       lastName,
-      history: historyData,
-      wayback: waybackData,
+      birthDate: dateOfArrival,
+      birthTime: exactTime,
+      birthPlace,
+      geocoded: geocoded || { lat: 0, lon: 0, name: birthPlace },
       astrology: astrologyData,
       earth: earthData,
       landsat: landsatData,
@@ -339,6 +338,16 @@ export default function Home() {
                   dateStr={cosmicData.birthDate} 
                 />
               </div>
+            </div>
+
+            {/* Premium Star Map */}
+            <div className="glass-panel" style={{ width: "100%", maxWidth: "800px", display: "flex", justifyContent: "center" }}>
+               <PremiumStarMap 
+                 dateStr={cosmicData.birthDate} 
+                 lat={cosmicData.geocoded.lat} 
+                 lon={cosmicData.geocoded.lon} 
+                 locationName={cosmicData.geocoded.name || cosmicData.birthPlace} 
+               />
             </div>
 
                 {/* What Did Hubble See on Your Birthday? */}

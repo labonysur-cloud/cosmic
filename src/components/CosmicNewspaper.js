@@ -1,5 +1,6 @@
 import React from "react";
 import PremiumMoon from "./PremiumMoon";
+import PremiumStarMap from "./PremiumStarMap";
 
 const MoonPhaseVisual = ({ fraction }) => {
   const isWaxing = fraction <= 0.5;
@@ -130,7 +131,7 @@ const CosmicNewspaper = React.forwardRef(({ cosmicData, nasaData }, ref) => {
                   </p>
                   
                   {cosmicData.moonPhaseDetails && (
-                    <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '20px 0' }}>
                       <div style={{ transform: 'scale(0.8)', transformOrigin: 'center' }}>
                         <PremiumMoon 
                           phaseAngle={cosmicData.moonPhaseDetails.phaseAngle} 
@@ -138,6 +139,16 @@ const CosmicNewspaper = React.forwardRef(({ cosmicData, nasaData }, ref) => {
                           dateStr={cosmicData.birthDate} 
                         />
                       </div>
+                      {cosmicData.geocoded && (
+                        <div style={{ marginTop: '20px', width: '100%', maxWidth: '400px' }}>
+                          <PremiumStarMap 
+                            dateStr={cosmicData.birthDate} 
+                            lat={cosmicData.geocoded.lat} 
+                            lon={cosmicData.geocoded.lon} 
+                            locationName={cosmicData.geocoded.name || cosmicData.birthPlace} 
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
 
